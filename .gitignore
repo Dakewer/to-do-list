@@ -1,0 +1,19 @@
+# Terraform: el tfstate NUNCA se sube al repositorio
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.tfvars
+crash.log
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# Llaves
+*.pem
+# IDE
+.idea/
+.env
