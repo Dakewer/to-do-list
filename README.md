@@ -116,3 +116,5 @@ scripts/          bootstrap-backend.sh, deploy_remote.sh
 - El tfstate nunca se sube al repo (`.gitignore`) y contiene la llave SSH y la contraseña de RDS: el bucket tiene el acceso público bloqueado.
 - Las credenciales de RDS no están en el código: la app las lee de Secrets Manager en tiempo de ejecución.
 - Los puertos 22 y 8000 están abiertos a `0.0.0.0/0` por simplicidad de la práctica; en producción se restringirían.
+
+Prueba de CI
