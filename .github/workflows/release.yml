@@ -1,0 +1,32 @@
+name: Release (Continuous Delivery)
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprimir el repositorio en zip
+        run: |
+          git archive --format=zip --prefix=todo-list-api/ \
+            -o "todo-list-api-${GITHUB_REF_NAME}.zip" "${GITHUB_REF_NAME}"
+
+      # Importante: un release creado con el GITHUB_TOKEN por defecto NO dispara otros
+      # workflows (regla de GitHub para evitar loops). Por eso se usa un PAT (RELEASE_PAT)
+      # para que el evento "release: published" sí active deploy.yml.
+      - name: Crear release en GitHub
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            "todo-list-api-${GITHUB_REF_NAME}.zip" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes

@@ -1,0 +1,51 @@
+name: Provision infrastructure
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init (backend remoto en S3)
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="region=${{ secrets.AWS_REGION }}"
+
+      - name: Terraform apply
+        run: |
+          terraform apply -auto-approve \
+            -var="aws_region=${{ secrets.AWS_REGION }}" \
+            -var="repo_url=https://github.com/${{ github.repository }}.git" \
+            -var="alert_email=${{ secrets.ALERT_EMAIL }}"
+
+      - name: Resumen
+        run: |
+          {
+            echo "### Infraestructura lista"
+            echo "- App: $(terraform output -raw app_url)"
+            echo "- Dashboard: $(terraform output -raw dashboard_name)"
+            echo ""
+            echo "Recuerda confirmar la suscripcion de SNS en tu correo."
+            echo "La app tarda ~2-3 min en responder tras crear la EC2 (user_data)."
+          } >> "$GITHUB_STEP_SUMMARY"

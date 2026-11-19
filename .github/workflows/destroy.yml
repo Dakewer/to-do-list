@@ -1,0 +1,40 @@
+name: Destroy infrastructure
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="region=${{ secrets.AWS_REGION }}"
+
+      - name: Terraform destroy
+        run: |
+          terraform destroy -auto-approve \
+            -var="aws_region=${{ secrets.AWS_REGION }}" \
+            -var="repo_url=https://github.com/${{ github.repository }}.git" \
+            -var="alert_email=${{ secrets.ALERT_EMAIL }}"

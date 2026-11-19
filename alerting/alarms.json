@@ -1,0 +1,41 @@
+{
+  "ec2-high-cpu": {
+    "description": "CPU de la EC2 > 70% sostenida (2 de 3 periodos de 5 min). Revisar si hay un loop/carga anormal en la app.",
+    "namespace": "AWS/EC2",
+    "metric_name": "CPUUtilization",
+    "statistic": "Average",
+    "period": 300,
+    "evaluation_periods": 3,
+    "datapoints_to_alarm": 2,
+    "threshold": 70,
+    "comparison_operator": "GreaterThanThreshold",
+    "treat_missing_data": "notBreaching",
+    "dimensions": { "InstanceId": "${instance_id}" }
+  },
+  "rds-errors": {
+    "description": "Hubo >= 1 error al leer/escribir en RDS en 1 minuto. Revisar si RDS esta detenida, el Security Group o las credenciales del secret.",
+    "namespace": "TodoApp",
+    "metric_name": "RDSErrors",
+    "statistic": "Sum",
+    "period": 60,
+    "evaluation_periods": 1,
+    "datapoints_to_alarm": 1,
+    "threshold": 1,
+    "comparison_operator": "GreaterThanOrEqualToThreshold",
+    "treat_missing_data": "notBreaching",
+    "dimensions": {}
+  },
+  "pending-tasks-backlog": {
+    "description": "Mas de 20 tareas pendientes durante 10 min (2 periodos de 5 min). Indica que las tareas se acumulan sin completarse.",
+    "namespace": "TodoApp",
+    "metric_name": "PendingTasks",
+    "statistic": "Maximum",
+    "period": 300,
+    "evaluation_periods": 2,
+    "datapoints_to_alarm": 2,
+    "threshold": 20,
+    "comparison_operator": "GreaterThanThreshold",
+    "treat_missing_data": "notBreaching",
+    "dimensions": {}
+  }
+}

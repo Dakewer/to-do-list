@@ -1,0 +1,51 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "EC2 CPUUtilization (nativa AWS)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [["AWS/EC2", "CPUUtilization", "InstanceId", "${instance_id}"]],
+        "annotations": { "horizontal": [{ "label": "Umbral alarma", "value": 70 }] }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "RDSErrors (propia)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Sum",
+        "period": 60,
+        "metrics": [["TodoApp", "RDSErrors"]]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "PendingTasks (propia)",
+        "region": "${region}",
+        "view": "timeSeries",
+        "stat": "Maximum",
+        "period": 300,
+        "metrics": [["TodoApp", "PendingTasks"]],
+        "annotations": { "horizontal": [{ "label": "Umbral alarma", "value": 20 }] }
+      }
+    }
+  ]
+}
