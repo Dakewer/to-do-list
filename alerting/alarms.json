@@ -10,7 +10,7 @@
     "threshold": 70,
     "comparison_operator": "GreaterThanThreshold",
     "treat_missing_data": "notBreaching",
-    "dimensions": { "InstanceId": "${instance_id}" }
+    "dimensions": { "InstanceId": "INSTANCE_ID" }
   },
   "rds-errors": {
     "description": "Hubo >= 1 error al leer/escribir en RDS en 1 minuto. Revisar si RDS esta detenida, el Security Group o las credenciales del secret.",

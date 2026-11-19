@@ -178,9 +178,9 @@ resource "aws_sns_topic_subscription" "email" {
 }
 
 locals {
-  alarms = jsondecode(templatefile("${path.module}/../alerting/alarms.json", {
-    instance_id = aws_instance.app.id
-  }))
+  # Se lee con file() para que los nombres de las alarmas sean conocidos en el plan.
+  # El ID de la instancia se sustituye abajo, en las dimensiones.
+  alarms = jsondecode(file("${path.module}/../alerting/alarms.json"))
 }
 
 resource "aws_cloudwatch_metric_alarm" "alarms" {
@@ -197,7 +197,7 @@ resource "aws_cloudwatch_metric_alarm" "alarms" {
   threshold           = each.value.threshold
   comparison_operator = each.value.comparison_operator
   treat_missing_data  = each.value.treat_missing_data
-  dimensions          = each.value.dimensions
+  dimensions          = { for k, v in each.value.dimensions : k => (v == "INSTANCE_ID" ? aws_instance.app.id : v) }
 
   alarm_actions = [aws_sns_topic.alerts.arn]
   ok_actions    = [aws_sns_topic.alerts.arn]
